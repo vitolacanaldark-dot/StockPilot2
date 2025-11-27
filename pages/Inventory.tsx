@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { Product, User } from '../types';
-import { Plus, Search, Filter, AlertCircle, ScanLine, Edit2, X, Camera, Lock } from 'lucide-react';
+import { Plus, Search, Filter, AlertCircle, ScanLine, Edit2, X, Camera, Lock, ChevronDown, Package } from 'lucide-react';
 import { ROLE_PERMISSIONS } from '../constants';
 
 interface InventoryProps {
@@ -62,107 +61,116 @@ const Inventory: React.FC<InventoryProps> = ({ products, onAdd, onUpdate, user }
     if (!canManage) return;
     setIsScannerOpen(false);
     openModal();
-    setFormData(prev => ({ ...prev, sku: 'SCAN-' + Math.floor(Math.random() * 10000), name: 'Item Escaneado Exemplo' }));
+    setFormData(prev => ({ ...prev, sku: 'SCAN-' + Math.floor(Math.random() * 10000), name: 'Item Capturado' }));
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="max-w-[1600px] mx-auto space-y-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Gestão de Estoque</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm">Gerencie produtos, rastreie lotes e ajuste o estoque.</p>
+          <h1 className="text-3xl font-bold text-white flex items-center gap-3">
+             <Package className="text-violet-500 w-8 h-8" />
+             Matriz de Estoque
+          </h1>
+          <p className="text-slate-400 text-sm mt-1">Gerenciamento centralizado de SKUs.</p>
         </div>
         
         {/* Permission Check for Actions */}
         {canManage && (
-          <div className="flex gap-2 w-full sm:w-auto">
+          <div className="flex gap-3 w-full sm:w-auto">
             <button 
               onClick={() => setIsScannerOpen(true)}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-4 py-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 font-medium transition-colors"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-zinc-900 hover:bg-zinc-800 text-slate-200 border border-white/10 px-6 py-3 rounded-xl font-medium transition-colors group"
             >
-              <ScanLine className="w-4 h-4" />
-              Escanear
+              <ScanLine className="w-4 h-4 group-hover:text-cyan-400" />
+              Scanner
             </button>
             <button 
               onClick={() => openModal()}
-              className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-indigo-600 text-white px-4 py-2.5 rounded-xl hover:bg-indigo-700 font-medium transition-colors shadow-sm"
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 bg-cyan-600 hover:bg-cyan-500 text-black px-6 py-3 rounded-xl font-bold transition-all shadow-[0_0_20px_rgba(8,145,178,0.2)] hover:shadow-[0_0_30px_rgba(6,182,212,0.4)]"
             >
               <Plus className="w-4 h-4" />
-              Adicionar Item
+              Novo Item
             </button>
           </div>
         )}
       </div>
 
       {/* Filters Bar */}
-      <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 flex flex-col sm:flex-row gap-4 items-center transition-colors">
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+      <div className="bg-zinc-900/50 backdrop-blur-md p-4 rounded-xl border border-white/5 flex flex-col sm:flex-row gap-4 items-center shadow-lg">
+        <div className="relative flex-1 w-full group">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4 group-focus-within:text-cyan-400 transition-colors" />
           <input 
             type="text" 
-            placeholder="Buscar por SKU, Nome ou Fornecedor..." 
+            placeholder="Buscar ID, Nome ou Fornecedor..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500"
+            className="w-full pl-10 pr-4 py-2.5 bg-black/50 border border-white/10 rounded-lg text-sm text-white focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 outline-none placeholder:text-slate-600 transition-all"
           />
         </div>
-        <button className="flex items-center gap-2 text-slate-600 dark:text-slate-300 px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg text-sm font-medium w-full sm:w-auto justify-center">
+        <button className="flex items-center gap-2 text-slate-300 bg-white/5 px-4 py-2.5 hover:bg-white/10 rounded-lg text-sm font-medium w-full sm:w-auto justify-center border border-white/5 transition-colors">
           <Filter className="w-4 h-4" />
-          Filtros
+          Filtrar Dados
         </button>
       </div>
 
       {/* Table */}
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden transition-colors">
+      <div className="bg-zinc-900/40 backdrop-blur-md rounded-2xl border border-white/5 overflow-hidden shadow-2xl relative">
+        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-500/20 to-transparent"></div>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700">
-                <th className="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Produto</th>
-                <th className="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">SKU</th>
-                <th className="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Categoria</th>
-                <th className="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Estoque</th>
-                <th className="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Preço</th>
-                <th className="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Status</th>
-                {canManage && <th className="px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Ações</th>}
+              <tr className="bg-black/50 border-b border-white/10">
+                <th className="px-6 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Produto</th>
+                <th className="px-6 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">SKU</th>
+                <th className="px-6 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Categoria</th>
+                <th className="px-6 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Qtd</th>
+                <th className="px-6 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Preço</th>
+                <th className="px-6 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Estado</th>
+                {canManage && <th className="px-6 py-5 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Ações</th>}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
+            <tbody className="divide-y divide-white/5">
               {filteredProducts.map((product) => (
-                <tr key={product.id} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                <tr key={product.id} className="hover:bg-white/5 transition-colors group">
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-xs">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center text-cyan-400 font-bold text-sm border border-white/5 shadow-inner">
                         {product.name.substring(0,2).toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-medium text-slate-900 dark:text-white">{product.name}</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{product.unit}</p>
+                        <p className="font-bold text-slate-200 group-hover:text-white transition-colors">{product.name}</p>
+                        <p className="text-xs text-slate-600 font-mono">{product.unit}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400 font-mono">{product.sku}</td>
-                  <td className="px-6 py-4 text-sm text-slate-600 dark:text-slate-400">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200">
+                  <td className="px-6 py-4 text-xs font-mono text-slate-400 tracking-wider">{product.sku}</td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-white/5 text-slate-300 border border-white/5">
                       {product.category}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-right font-medium text-slate-700 dark:text-slate-300">{product.stock}</td>
-                  <td className="px-6 py-4 text-sm text-right text-slate-600 dark:text-slate-400">R${product.price.toFixed(2)}</td>
+                  <td className="px-6 py-4 text-sm text-right font-mono font-bold text-slate-300">{product.stock}</td>
+                  <td className="px-6 py-4 text-sm text-right font-mono text-cyan-400">R${product.price.toFixed(2)}</td>
                   <td className="px-6 py-4 text-right">
                      {product.stock <= product.minStock ? (
-                       <span className="inline-flex items-center gap-1 text-xs font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded-full">
-                         <AlertCircle className="w-3 h-3" /> Estoque Baixo
-                       </span>
+                       <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-red-500/10 text-red-400 rounded-full border border-red-500/20">
+                         <span className="relative flex h-2 w-2">
+                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                           <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+                         </span>
+                         <span className="text-[10px] font-bold uppercase tracking-wider">Crítico</span>
+                       </div>
                      ) : (
-                       <span className="inline-flex items-center gap-1 text-xs font-bold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded-full">
-                         Em Estoque
-                       </span>
+                       <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-500/10 text-green-400 rounded-full border border-green-500/20">
+                         <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                         <span className="text-[10px] font-bold uppercase tracking-wider">OK</span>
+                       </div>
                      )}
                   </td>
                   {canManage && (
-                    <td className="px-6 py-4">
-                      <button onClick={() => openModal(product)} className="p-2 hover:bg-indigo-50 dark:hover:bg-slate-700 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg transition-colors">
+                    <td className="px-6 py-4 text-center">
+                      <button onClick={() => openModal(product)} className="p-2 hover:bg-cyan-500/10 text-slate-500 hover:text-cyan-400 rounded-lg transition-colors">
                         <Edit2 className="w-4 h-4" />
                       </button>
                     </td>
@@ -173,135 +181,151 @@ const Inventory: React.FC<InventoryProps> = ({ products, onAdd, onUpdate, user }
           </table>
         </div>
         {filteredProducts.length === 0 && (
-          <div className="p-12 text-center text-slate-500 dark:text-slate-400">
-            Nenhum produto encontrado correspondente à sua pesquisa.
+          <div className="p-16 text-center">
+            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4">
+               <Package className="w-8 h-8 text-slate-600" />
+            </div>
+            <p className="text-slate-500">Nenhum registro encontrado no banco de dados.</p>
           </div>
         )}
       </div>
 
-      {/* Edit/Add Modal */}
+      {/* Edit/Add Modal - Cyberpunk Style */}
       {isModalOpen && canManage && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-2xl shadow-2xl animate-in zoom-in-95 duration-200">
-            <div className="flex justify-between items-center p-6 border-b border-slate-100 dark:border-slate-700">
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">{editingProduct ? 'Editar Produto' : 'Novo Produto'}</h2>
-              <button onClick={closeModal} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full text-slate-500 dark:text-slate-400">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={closeModal}></div>
+          <div className="bg-zinc-950 border border-white/10 rounded-2xl w-full max-w-2xl shadow-[0_0_50px_rgba(0,0,0,0.8)] relative z-10 animate-in zoom-in-95 duration-200 overflow-hidden">
+            {/* Top neon line */}
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 to-violet-500"></div>
+            
+            <div className="flex justify-between items-center p-6 border-b border-white/5 bg-white/5">
+              <h2 className="text-xl font-bold text-white tracking-wide">{editingProduct ? 'Editar Registro' : 'Novo Registro'}</h2>
+              <button onClick={closeModal} className="text-slate-500 hover:text-white transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
-            <form onSubmit={handleSave} className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nome do Produto</label>
+            
+            <form onSubmit={handleSave} className="p-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Nome do Produto</label>
                 <input 
                   type="text" 
                   required
                   value={formData.name}
                   onChange={e => setFormData({...formData, name: e.target.value})}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white"
+                  className="w-full px-4 py-2.5 bg-black border border-white/10 rounded-lg focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 text-white outline-none transition-all"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">SKU / Código de Barras</label>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">SKU</label>
                 <input 
                   type="text" 
                   required
                   value={formData.sku}
                   onChange={e => setFormData({...formData, sku: e.target.value})}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white"
+                  className="w-full px-4 py-2.5 bg-black border border-white/10 rounded-lg focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 text-white outline-none transition-all font-mono"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Categoria</label>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Categoria</label>
                 <input 
                   type="text" 
                   value={formData.category}
                   onChange={e => setFormData({...formData, category: e.target.value})}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white"
+                  className="w-full px-4 py-2.5 bg-black border border-white/10 rounded-lg focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 text-white outline-none transition-all"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Fornecedor</label>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Fornecedor</label>
                 <input 
                   type="text" 
                   value={formData.supplier}
                   onChange={e => setFormData({...formData, supplier: e.target.value})}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white"
+                  className="w-full px-4 py-2.5 bg-black border border-white/10 rounded-lg focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 text-white outline-none transition-all"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Preço de Custo (R$)</label>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Custo (R$)</label>
                 <input 
                   type="number" 
                   min="0" step="0.01"
                   value={formData.cost}
                   onChange={e => setFormData({...formData, cost: parseFloat(e.target.value)})}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white"
+                  className="w-full px-4 py-2.5 bg-black border border-white/10 rounded-lg focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 text-white outline-none transition-all"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Preço de Venda (R$)</label>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Venda (R$)</label>
                 <input 
                   type="number" 
                   min="0" step="0.01"
                   value={formData.price}
                   onChange={e => setFormData({...formData, price: parseFloat(e.target.value)})}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white"
+                  className="w-full px-4 py-2.5 bg-black border border-white/10 rounded-lg focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 text-white outline-none transition-all"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Estoque Atual</label>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Estoque Atual</label>
                 <input 
                   type="number" 
                   min="0"
                   value={formData.stock}
                   onChange={e => setFormData({...formData, stock: parseInt(e.target.value)})}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white"
+                  className="w-full px-4 py-2.5 bg-black border border-white/10 rounded-lg focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 text-white outline-none transition-all"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Alerta de Mínimo</label>
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Min. Alerta</label>
                 <input 
                   type="number" 
                   min="0"
                   value={formData.minStock}
                   onChange={e => setFormData({...formData, minStock: parseInt(e.target.value)})}
-                  className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white"
+                  className="w-full px-4 py-2.5 bg-black border border-white/10 rounded-lg focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 text-white outline-none transition-all"
                 />
               </div>
               
-              <div className="sm:col-span-2 pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-end gap-3">
-                <button type="button" onClick={closeModal} className="px-5 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg font-medium transition-colors">Cancelar</button>
-                <button type="submit" className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium shadow-md transition-colors">Salvar Produto</button>
+              <div className="sm:col-span-2 pt-6 border-t border-white/5 flex justify-end gap-4">
+                <button type="button" onClick={closeModal} className="px-6 py-3 text-slate-400 hover:text-white rounded-xl font-bold transition-colors">Cancelar</button>
+                <button type="submit" className="px-8 py-3 bg-cyan-600 hover:bg-cyan-500 text-black rounded-xl font-bold shadow-[0_0_20px_rgba(8,145,178,0.3)] transition-all">Salvar Dados</button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* Barcode Scanner Modal (Simulated) */}
+      {/* Scanner Modal - HUD Style */}
       {isScannerOpen && canManage && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex flex-col items-center justify-center p-4">
-           <div className="relative w-full max-w-sm aspect-[3/4] bg-slate-900 rounded-2xl overflow-hidden border border-slate-700 shadow-2xl">
-              {/* Camera Preview Simulation */}
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50 z-10"></div>
-              <div className="absolute inset-0 flex items-center justify-center z-0">
-                 <Camera className="w-16 h-16 text-slate-700 animate-pulse" />
-                 <p className="absolute bottom-20 text-slate-400 text-sm">Câmera Ativa</p>
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center p-4">
+           <div className="absolute inset-0 bg-black/95" onClick={closeModal}></div>
+           
+           <div className="relative w-full max-w-sm aspect-[3/4] bg-black rounded-3xl overflow-hidden border border-cyan-500/30 shadow-[0_0_50px_rgba(6,182,212,0.2)]">
+              <div className="absolute inset-0 z-0">
+                 {/* Grid Overlay */}
+                 <div className="w-full h-full bg-[linear-gradient(rgba(6,182,212,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.1)_1px,transparent_1px)] bg-[size:40px_40px]"></div>
               </div>
               
-              {/* Overlay UI */}
-              <div className="absolute top-0 left-0 right-0 p-4 z-20 flex justify-between items-center">
-                 <button onClick={closeModal} className="p-2 bg-black/40 rounded-full text-white backdrop-blur-md"><X className="w-5 h-5"/></button>
-                 <span className="text-white font-medium text-sm bg-black/40 px-3 py-1 rounded-full backdrop-blur-md">Escanear Código</span>
+              <div className="absolute inset-0 flex items-center justify-center z-10">
+                 <Camera className="w-12 h-12 text-cyan-500/50 animate-pulse" />
               </div>
               
-              {/* Scan Frame */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-40 border-2 border-green-500 rounded-lg z-20 flex items-center justify-center">
-                 <div className="w-full h-0.5 bg-red-500 animate-[ping_1.5s_ease-in-out_infinite] opacity-50"></div>
+              {/* Header */}
+              <div className="absolute top-0 left-0 right-0 p-6 z-20 flex justify-between items-center">
+                 <button onClick={closeModal} className="p-2 bg-black/50 rounded-full text-white border border-white/10"><X className="w-5 h-5"/></button>
+                 <span className="text-cyan-400 font-mono text-xs bg-cyan-900/20 border border-cyan-500/30 px-3 py-1 rounded-full uppercase tracking-widest">Scanner Ativo</span>
               </div>
               
-              <div className="absolute bottom-6 left-0 right-0 px-6 z-20">
-                 <button onClick={simulateScan} className="w-full bg-white text-slate-900 py-3 rounded-xl font-bold shadow-lg">Capturar / Digitar Manualmente</button>
+              {/* Target Reticle */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 z-20 pointer-events-none">
+                 <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-500"></div>
+                 <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-500"></div>
+                 <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-cyan-500"></div>
+                 <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-500"></div>
+                 <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-red-500/50 animate-scan-y"></div>
+              </div>
+              
+              <div className="absolute bottom-8 left-0 right-0 px-8 z-20">
+                 <button onClick={simulateScan} className="w-full bg-cyan-600 hover:bg-cyan-500 text-black py-4 rounded-xl font-bold shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all">Capturar Código</button>
               </div>
            </div>
         </div>

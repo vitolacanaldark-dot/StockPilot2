@@ -1,8 +1,7 @@
-
 import React, { useMemo, useState, useEffect } from 'react';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
 import { Product, Sale, User } from '../types';
-import { DollarSign, AlertTriangle, TrendingUp, Package, Sparkles, Lock, Lightbulb, TrendingDown, Minus, ArrowRight, ExternalLink } from 'lucide-react';
+import { DollarSign, AlertTriangle, TrendingUp, Package, Sparkles, Lock, Lightbulb, TrendingDown, Minus, ArrowRight, ExternalLink, Activity } from 'lucide-react';
 import { generateInventoryInsights } from '../services/geminiService';
 import { ROLE_PERMISSIONS, DASHBOARD_TIPS, MARKET_NEWS } from '../constants';
 
@@ -46,7 +45,7 @@ const Dashboard: React.FC<DashboardProps> = ({ products, sales, user }) => {
   }, [sales]);
 
   const salesTrend = useMemo(() => {
-    // Mock trend data for demo visuals (real logic would group sales by date)
+    // Mock trend data for demo visuals
     return [
         { day: 'Seg', val: 400 },
         { day: 'Ter', val: 300 },
@@ -65,29 +64,29 @@ const Dashboard: React.FC<DashboardProps> = ({ products, sales, user }) => {
     setLoadingAi(false);
   };
 
-  const KPICard = ({ title, value, sub, icon: Icon, color, hidden = false }: any) => {
+  const KPICard = ({ title, value, sub, icon: Icon, color, hidden = false, glowColor }: any) => {
     if (hidden) {
       return (
-        <div className="bg-slate-50 dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 flex items-center justify-center h-32 relative overflow-hidden group transition-colors">
-           <div className="absolute inset-0 bg-slate-100/50 dark:bg-slate-900/50 backdrop-blur-sm z-10 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500">
+        <div className="bg-zinc-900/50 backdrop-blur-md p-6 rounded-2xl border border-white/5 flex items-center justify-center h-32 relative overflow-hidden group">
+           <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-500 z-10">
               <Lock className="w-6 h-6 mb-2" />
-              <span className="text-xs font-medium uppercase tracking-widest">Restrito</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest">Acesso Restrito</span>
            </div>
-           <div className="blur-sm opacity-50 w-full">
-              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">{title}</p>
-              <h3 className="text-3xl font-bold text-slate-800 dark:text-slate-200">---</h3>
-           </div>
+           {/* Scanline effect */}
+           <div className="absolute inset-0 bg-[linear-gradient(transparent_0%,rgba(255,255,255,0.05)_50%,transparent_100%)] bg-[length:100%_4px] animate-[scan_2s_linear_infinite] pointer-events-none opacity-20"></div>
         </div>
       );
     }
     return (
-      <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-start justify-between hover:shadow-md transition-all">
-        <div>
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">{title}</p>
-          <h3 className="text-3xl font-bold text-slate-800 dark:text-white tracking-tight">{value}</h3>
-          <p className={`text-xs mt-2 font-medium ${sub.includes('+') ? 'text-green-600 dark:text-green-400' : 'text-slate-400 dark:text-slate-500'}`}>{sub}</p>
+      <div className={`bg-zinc-900/50 backdrop-blur-md p-6 rounded-2xl border border-white/5 flex items-start justify-between hover:bg-zinc-900/80 transition-all group relative overflow-hidden`}>
+        {/* Glow effect on hover */}
+        <div className={`absolute -inset-0.5 bg-gradient-to-r ${glowColor} opacity-0 group-hover:opacity-20 blur transition duration-500`}></div>
+        <div className="relative z-10">
+          <p className="text-sm font-medium text-slate-400 mb-1">{title}</p>
+          <h3 className="text-3xl font-bold text-white tracking-tight">{value}</h3>
+          <p className={`text-xs mt-2 font-medium ${sub.includes('+') ? 'text-green-400' : 'text-slate-500'}`}>{sub}</p>
         </div>
-        <div className={`p-3 rounded-xl ${color}`}>
+        <div className={`p-3 rounded-xl bg-white/5 border border-white/10 group-hover:border-white/20 transition-colors relative z-10`}>
           <Icon className="w-6 h-6 text-white" />
         </div>
       </div>
@@ -95,118 +94,139 @@ const Dashboard: React.FC<DashboardProps> = ({ products, sales, user }) => {
   };
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-10">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="space-y-8 max-w-[1600px] mx-auto pb-10">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Visão Geral</h1>
-           <p className="text-slate-500 dark:text-slate-400 text-sm">Bem-vindo de volta, aqui está o resumo de hoje.</p>
+           <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
+             <Activity className="text-cyan-500 w-6 h-6" />
+             Painel de Controle
+           </h1>
+           <p className="text-slate-400 text-sm mt-1">Resumo operacional em tempo real.</p>
         </div>
         
         {permissions.canManageUsers && (
           <button 
             onClick={handleGenerateInsights}
             disabled={loadingAi}
-            className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-2.5 rounded-xl shadow-lg hover:shadow-indigo-200 dark:hover:shadow-indigo-900/30 transition-all disabled:opacity-70"
+            className="flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 text-cyan-400 px-6 py-3 rounded-xl transition-all disabled:opacity-50 group backdrop-blur-md"
           >
-            {loadingAi ? <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin"/> : <Sparkles className="w-4 h-4" />}
-            <span>{loadingAi ? 'Analisando Dados...' : 'Perguntar à IA StockPilot'}</span>
+            {loadingAi ? <div className="w-4 h-4 border-2 border-cyan-400/50 border-t-cyan-400 rounded-full animate-spin"/> : <Sparkles className="w-4 h-4 group-hover:text-cyan-300 group-hover:scale-110 transition-all" />}
+            <span className="font-medium tracking-wide">Iniciar IA Neural</span>
           </button>
         )}
       </div>
 
       {/* KPI Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <KPICard 
-          title="Receita Hoje" 
+          title="Receita (24h)" 
           value={`R$${totalRevenue.toFixed(2)}`} 
-          sub="+12% desde ontem"
+          sub="+12% projetado"
           icon={DollarSign}
-          color="bg-green-500"
+          glowColor="from-green-500 to-emerald-500"
           hidden={!canViewFinancials}
         />
         <KPICard 
-          title="Alertas de Baixo Estoque" 
+          title="Alertas Críticos" 
           value={lowStockItems.length} 
-          sub={lowStockItems.length > 0 ? "Requer atenção" : "Estoque saudável"}
+          sub={lowStockItems.length > 0 ? "Requer intervenção" : "Estável"}
           icon={AlertTriangle}
-          color={lowStockItems.length > 0 ? "bg-red-500" : "bg-slate-400"}
+          glowColor="from-red-500 to-orange-500"
+          color={lowStockItems.length > 0 ? "text-red-500" : "text-slate-400"}
         />
         <KPICard 
-          title="Total de Transações" 
+          title="Volume Vendas" 
           value={todaysSales.length} 
-          sub="+5% volume"
+          sub="+5% vs média"
           icon={TrendingUp}
-          color="bg-blue-500"
+          glowColor="from-cyan-500 to-blue-500"
           hidden={!canViewFinancials && !permissions.canSell}
         />
         <KPICard 
-          title="Total de SKUs" 
+          title="Total SKUs" 
           value={products.length} 
-          sub="2 novos esta semana"
+          sub="Catálogo ativo"
           icon={Package}
-          color="bg-indigo-500"
+          glowColor="from-violet-500 to-purple-500"
         />
       </div>
 
       {/* AI Insight Section */}
       {aiInsight && (
-        <div className="bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-950/40 dark:to-slate-900 p-6 rounded-2xl border border-indigo-100 dark:border-indigo-900 shadow-sm animate-in fade-in slide-in-from-top-4">
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-            <h3 className="font-bold text-indigo-900 dark:text-indigo-200">Análise Inteligente StockPilot</h3>
+        <div className="bg-gradient-to-r from-violet-900/20 to-cyan-900/20 p-8 rounded-2xl border border-white/10 relative overflow-hidden animate-in fade-in slide-in-from-top-4">
+          <div className="absolute top-0 right-0 p-4 opacity-20">
+             <Sparkles className="w-24 h-24 text-white" />
           </div>
-          <div className="prose prose-sm max-w-none text-slate-700 dark:text-slate-300">
-             <div className="whitespace-pre-line leading-relaxed">{aiInsight}</div>
+          <div className="flex items-center gap-3 mb-4 relative z-10">
+            <div className="w-2 h-8 bg-cyan-500 rounded-full shadow-[0_0_15px_rgba(6,182,212,0.8)]"></div>
+            <h3 className="text-xl font-bold text-white">Análise Neural StockPilot</h3>
+          </div>
+          <div className="prose prose-invert prose-sm max-w-none text-slate-300 relative z-10">
+             <div className="whitespace-pre-line leading-relaxed font-light">{aiInsight}</div>
           </div>
         </div>
       )}
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Revenue Chart */}
-        <div className="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm relative transition-colors">
+        <div className="lg:col-span-2 bg-zinc-900/50 backdrop-blur-md p-6 rounded-2xl border border-white/5 relative shadow-xl overflow-hidden">
           {!canViewFinancials && (
-             <div className="absolute inset-0 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm z-10 flex items-center justify-center rounded-2xl">
-                <div className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 flex items-center gap-2 text-slate-500 dark:text-slate-400">
+             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-10 flex items-center justify-center">
+                <div className="bg-zinc-900 p-4 rounded-xl border border-white/10 flex items-center gap-3 text-slate-400">
                    <Lock className="w-5 h-5" />
-                   <span className="font-medium">Dados financeiros restritos para seu cargo</span>
+                   <span className="font-mono text-sm uppercase">Dados Criptografados</span>
                 </div>
              </div>
           )}
-          <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-6">Tendência de Receita (Semana)</h3>
-          <div className="h-72 w-full">
+          <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+            <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
+            Fluxo de Receita
+          </h3>
+          <div className="h-80 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={salesTrend}>
                 <defs>
                   <linearGradient id="colorVal" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#06b6d4" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" className="dark:stroke-slate-700" />
-                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#94a3b8', fontSize: 12}} prefix="R$" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: '#64748b', fontSize: 12}} prefix="R$" />
                 <Tooltip 
-                  contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'}} 
-                  cursor={{stroke: '#cbd5e1'}}
+                  contentStyle={{backgroundColor: '#09090b', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', color: '#fff'}} 
+                  itemStyle={{color: '#22d3ee'}}
+                  cursor={{stroke: 'rgba(34,211,238,0.3)', strokeWidth: 1}}
                 />
-                <Area type="monotone" dataKey="val" stroke="#6366f1" strokeWidth={3} fillOpacity={1} fill="url(#colorVal)" />
+                <Area type="monotone" dataKey="val" stroke="#22d3ee" strokeWidth={3} fillOpacity={1} fill="url(#colorVal)" activeDot={{r: 6, fill: '#fff', stroke: '#06b6d4', strokeWidth: 2}} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Top Products */}
-        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm transition-colors">
-          <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-6">Itens Mais Vendidos</h3>
-          <div className="h-72 w-full">
+        <div className="bg-zinc-900/50 backdrop-blur-md p-6 rounded-2xl border border-white/5 relative shadow-xl">
+          <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+             <div className="w-2 h-2 bg-violet-500 rounded-full"></div>
+             Top Performance
+          </h3>
+          <div className="h-80 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={salesByProduct} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" className="dark:stroke-slate-700" />
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="rgba(255,255,255,0.05)" />
                 <XAxis type="number" hide />
-                <YAxis dataKey="name" type="category" width={100} tick={{fill: '#475569', fontSize: 11}} className="dark:fill-slate-400" />
-                <Tooltip cursor={{fill: 'transparent'}} />
-                <Bar dataKey="quantity" fill="#3b82f6" radius={[0, 4, 4, 0]} barSize={20} />
+                <YAxis dataKey="name" type="category" width={100} tick={{fill: '#94a3b8', fontSize: 11, fontWeight: 500}} />
+                <Tooltip 
+                   cursor={{fill: 'rgba(255,255,255,0.05)'}}
+                   contentStyle={{backgroundColor: '#09090b', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', color: '#fff'}} 
+                />
+                <Bar dataKey="quantity" radius={[0, 4, 4, 0]} barSize={24}>
+                  {salesByProduct.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={index % 2 === 0 ? '#8b5cf6' : '#6366f1'} />
+                  ))}
+                </Bar>
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -214,76 +234,66 @@ const Dashboard: React.FC<DashboardProps> = ({ products, sales, user }) => {
       </div>
 
       {/* Interactive Footer Panel */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-        {/* Tips Section */}
-        <div className="bg-[#1e1b4b] dark:bg-slate-900 rounded-2xl p-6 relative overflow-hidden text-white flex flex-col justify-between min-h-[220px] transition-colors border border-transparent dark:border-slate-700">
-           {/* Background Decorations */}
-           <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl -mr-10 -mt-10"></div>
-           <div className="absolute bottom-0 left-0 w-24 h-24 bg-purple-500/20 rounded-full blur-xl -ml-10 -mb-10"></div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
+        {/* Tips Section - Cyberpunk Style */}
+        <div className="bg-black border border-cyan-500/20 rounded-2xl p-8 relative overflow-hidden group">
+           {/* Moving gradient background */}
+           <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/20 via-black to-violet-900/20 opacity-50 group-hover:opacity-70 transition-opacity duration-1000"></div>
            
-           <div className="relative z-10">
-             <div className="flex items-center gap-2 mb-4 text-amber-300">
-               <Lightbulb className="w-5 h-5 fill-current" />
-               <span className="font-bold tracking-wide text-xs uppercase">Dica do Especialista</span>
+           <div className="relative z-10 flex flex-col justify-between h-full min-h-[200px]">
+             <div className="flex items-center gap-3 text-cyan-400 mb-6">
+               <div className="p-2 bg-cyan-500/10 rounded-lg border border-cyan-500/20">
+                  <Lightbulb className="w-5 h-5" />
+               </div>
+               <span className="font-mono text-xs font-bold uppercase tracking-widest">Database Estratégico</span>
              </div>
              
-             <div className="min-h-[100px] transition-all duration-500">
-               <h3 className="text-xl font-medium leading-relaxed mb-2">"{DASHBOARD_TIPS[currentTipIndex].text}"</h3>
-               <span className="inline-block px-2 py-1 bg-white/10 rounded text-xs font-semibold text-indigo-200">
-                 {DASHBOARD_TIPS[currentTipIndex].category}
-               </span>
+             <div className="flex-1 transition-all duration-500 flex items-center">
+               <h3 className="text-2xl font-light text-white leading-snug">"{DASHBOARD_TIPS[currentTipIndex].text}"</h3>
              </div>
-           </div>
-
-           <div className="flex items-center justify-between mt-4 relative z-10 border-t border-white/10 pt-4">
-             <div className="flex gap-1">
-               {DASHBOARD_TIPS.map((_, idx) => (
-                 <div 
-                   key={idx} 
-                   className={`h-1 rounded-full transition-all duration-300 ${idx === currentTipIndex ? 'w-6 bg-amber-400' : 'w-2 bg-white/20'}`}
-                 />
-               ))}
+             
+             <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
+                <span className="text-xs font-mono text-cyan-300 bg-cyan-900/30 px-2 py-1 rounded">
+                   CMD: {DASHBOARD_TIPS[currentTipIndex].category.toUpperCase()}
+                </span>
+                <button onClick={() => setCurrentTipIndex((prev) => (prev + 1) % DASHBOARD_TIPS.length)} className="text-xs hover:text-white text-slate-400 transition-colors flex items-center gap-2 font-mono uppercase tracking-wider">
+                  Próximo <ArrowRight className="w-3 h-3" />
+                </button>
              </div>
-             <button onClick={() => setCurrentTipIndex((prev) => (prev + 1) % DASHBOARD_TIPS.length)} className="text-xs hover:text-amber-300 transition-colors flex items-center gap-1">
-               Próxima Dica <ArrowRight className="w-3 h-3" />
-             </button>
            </div>
         </div>
 
         {/* Market News Section */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 transition-colors">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-               <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
-               <h3 className="font-bold text-slate-800 dark:text-white">Mercado em Tempo Real</h3>
+        <div className="bg-zinc-900/50 backdrop-blur-md rounded-2xl border border-white/5 p-8 flex flex-col h-full">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+               <h3 className="font-bold text-white tracking-wide">Mercado Global</h3>
             </div>
-            <span className="flex items-center gap-1 text-[10px] font-bold bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-2 py-0.5 rounded-full animate-pulse">
-               <span className="w-1.5 h-1.5 bg-red-600 dark:bg-red-500 rounded-full"></span> AO VIVO
-            </span>
+            <span className="text-[10px] font-mono font-bold text-slate-500">FEED_V1.0</span>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-5 flex-1 overflow-y-auto pr-2 custom-scrollbar">
              {MARKET_NEWS.map((news, idx) => (
-               <div key={idx} className="flex items-start gap-3 pb-3 border-b border-slate-50 dark:border-slate-700 last:border-0 last:pb-0">
-                  <div className={`mt-1 flex-shrink-0 w-6 h-6 rounded flex items-center justify-center ${
-                    news.trend === 'up' ? 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400' : 
-                    news.trend === 'down' ? 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400' : 
-                    'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
+               <div key={idx} className="flex items-start gap-4 pb-4 border-b border-white/5 last:border-0 last:pb-0 group">
+                  <div className={`mt-1 flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center border border-white/5 ${
+                    news.trend === 'up' ? 'bg-green-500/10 text-green-500' : 
+                    news.trend === 'down' ? 'bg-red-500/10 text-red-500' : 
+                    'bg-slate-800 text-slate-400'
                   }`}>
-                    {news.trend === 'up' ? <TrendingUp className="w-3 h-3" /> : news.trend === 'down' ? <TrendingDown className="w-3 h-3" /> : <Minus className="w-3 h-3" />}
+                    {news.trend === 'up' ? <TrendingUp className="w-4 h-4" /> : news.trend === 'down' ? <TrendingDown className="w-4 h-4" /> : <Minus className="w-4 h-4" />}
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-slate-800 dark:text-slate-200 leading-tight hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer transition-colors">
+                    <p className="text-sm font-medium text-slate-300 leading-snug group-hover:text-cyan-400 transition-colors cursor-pointer">
                       {news.title}
                     </p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 uppercase">{news.source}</span>
-                      <span className="text-[10px] text-slate-300 dark:text-slate-600">•</span>
-                      <span className="text-[10px] text-slate-400 dark:text-slate-500">{news.time}</span>
+                    <div className="flex items-center gap-3 mt-1.5">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{news.source}</span>
+                      <span className="text-[10px] text-slate-600 font-mono">{news.time}</span>
                     </div>
                   </div>
-                  <button className="text-slate-300 dark:text-slate-600 hover:text-indigo-600 dark:hover:text-indigo-400">
-                    <ExternalLink className="w-3 h-3" />
+                  <button className="text-slate-600 hover:text-white transition-colors opacity-0 group-hover:opacity-100">
+                    <ExternalLink className="w-4 h-4" />
                   </button>
                </div>
              ))}

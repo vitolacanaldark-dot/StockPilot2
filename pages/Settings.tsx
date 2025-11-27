@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { User, PlanTier, UserRole } from '../types';
-import { Save, User as UserIcon, Building2, CreditCard, Shield, Lock, Star, ChevronRight } from 'lucide-react';
+import { Save, User as UserIcon, Building2, CreditCard, Shield, Lock, Star, ChevronRight, Cpu } from 'lucide-react';
 
 interface SettingsProps {
   user: User;
@@ -22,167 +21,174 @@ const Settings: React.FC<SettingsProps> = ({ user, onUpdateUser }) => {
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     onUpdateUser({ ...user, ...formData });
-    setSuccessMsg('Perfil atualizado com sucesso!');
+    setSuccessMsg('Dados sincronizados com sucesso.');
     setTimeout(() => setSuccessMsg(''), 3000);
   };
 
   const PlanCard = () => (
-    <div className="bg-gradient-to-br from-slate-900 to-indigo-900 dark:from-slate-800 dark:to-indigo-950 text-white rounded-2xl p-6 relative overflow-hidden shadow-xl">
+    <div className="bg-gradient-to-br from-zinc-900 to-black text-white rounded-3xl p-8 relative overflow-hidden shadow-2xl border border-white/10 group">
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+      
+      {/* Neon border glow */}
+      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50"></div>
+
       <div className="relative z-10">
-        <div className="flex justify-between items-start mb-4">
+        <div className="flex justify-between items-start mb-6">
           <div>
-            <p className="text-indigo-200 text-sm font-medium mb-1">Seu Plano Atual</p>
-            <h3 className="text-2xl font-bold">{user.plan === PlanTier.FREE ? 'Gratuito' : user.plan === PlanTier.STANDARD ? 'Padrão' : 'VIP Niche'}</h3>
+            <p className="text-cyan-400 text-xs font-mono uppercase tracking-widest mb-2">Plano Ativo</p>
+            <h3 className="text-3xl font-black tracking-tight">{user.plan === PlanTier.FREE ? 'BASIC' : user.plan === PlanTier.STANDARD ? 'STANDARD' : 'VIP NICHE'}</h3>
           </div>
           {isVip ? (
-            <span className="bg-amber-400 text-amber-900 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-              <Star className="w-3 h-3 fill-current" /> VIP ATIVO
-            </span>
+            <div className="bg-amber-500/10 text-amber-400 px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 border border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
+              <Star className="w-3 h-3 fill-current" /> ELITE
+            </div>
           ) : (
-            <span className="bg-slate-700 text-slate-300 px-3 py-1 rounded-full text-xs font-bold">Básico</span>
+            <span className="bg-slate-800 text-slate-400 px-3 py-1 rounded-full text-xs font-bold border border-white/5">GRATUITO</span>
           )}
         </div>
         
-        <div className="space-y-3 mb-6">
-          <div className="flex items-center gap-2 text-sm text-indigo-100">
-            <CheckIcon /> Acesso ao Painel e Inventário
+        <div className="space-y-4 mb-8">
+          <div className="flex items-center gap-3 text-sm text-slate-300">
+            <CheckIcon /> Acesso ao Terminal e Database
           </div>
-          <div className="flex items-center gap-2 text-sm text-indigo-100">
-             <CheckIcon /> {isVip ? 'Usuários Ilimitados' : 'Até 3 Usuários'}
+          <div className="flex items-center gap-3 text-sm text-slate-300">
+             <CheckIcon /> {isVip ? 'Multi-Operadores (Ilimitado)' : 'Até 3 Operadores'}
           </div>
-          <div className="flex items-center gap-2 text-sm text-indigo-100">
-             <CheckIcon /> {isVip ? 'IA Preditiva Avançada' : 'Relatórios Básicos'}
+          <div className="flex items-center gap-3 text-sm text-slate-300">
+             <CheckIcon /> {isVip ? 'IA Neural Preditiva v2.0' : 'Relatórios Estáticos'}
           </div>
         </div>
 
         {!isVip && (
-          <button className="w-full bg-amber-400 hover:bg-amber-300 text-amber-900 font-bold py-3 rounded-xl transition-colors">
-            Fazer Upgrade para VIP
+          <button className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-black font-bold py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(245,158,11,0.3)]">
+            Solicitar Acesso VIP
           </button>
         )}
       </div>
       
       {/* Decorative Circles */}
-      <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-2xl"></div>
-      <div className="absolute bottom-0 right-0 w-32 h-32 bg-purple-500/20 rounded-full blur-xl"></div>
+      <div className="absolute -top-20 -right-20 w-60 h-60 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-0 right-0 w-40 h-40 bg-violet-500/10 rounded-full blur-2xl pointer-events-none"></div>
     </div>
   );
 
   const CheckIcon = () => (
-    <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
-      <div className="w-1.5 h-2.5 border-r-2 border-b-2 border-white rotate-45 mb-0.5"></div>
+    <div className="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center border border-cyan-500/30">
+      <div className="w-1.5 h-2.5 border-r-2 border-b-2 border-cyan-400 rotate-45 mb-0.5"></div>
     </div>
   );
 
   return (
-    <div className="max-w-5xl mx-auto pb-10">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Configurações da Conta</h1>
-        <p className="text-slate-500 dark:text-slate-400 text-sm">Gerencie seu perfil, preferências e assinatura.</p>
+    <div className="max-w-[1200px] mx-auto pb-12">
+      <div className="mb-10 flex items-center gap-4">
+        <div className="p-3 bg-zinc-900 rounded-xl border border-white/10">
+           <SettingsIcon className="w-8 h-8 text-white" />
+        </div>
+        <div>
+          <h1 className="text-3xl font-bold text-white">Configurações do Sistema</h1>
+          <p className="text-slate-400 text-sm mt-1">Gerencie parâmetros de conta e segurança.</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column - Profile Form */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-8">
           
           {/* Personal Info */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 transition-colors">
-            <div className="flex items-center gap-3 mb-6 border-b border-slate-100 dark:border-slate-700 pb-4">
-              <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg text-indigo-600 dark:text-indigo-400">
+          <div className="bg-zinc-900/50 backdrop-blur-md rounded-3xl border border-white/5 p-8 shadow-xl">
+            <div className="flex items-center gap-4 mb-8 pb-6 border-b border-white/5">
+              <div className="p-2 bg-cyan-500/10 rounded-lg text-cyan-400 border border-cyan-500/20">
                 <UserIcon className="w-5 h-5" />
               </div>
-              <h2 className="font-bold text-lg text-slate-800 dark:text-white">Informações Pessoais</h2>
+              <h2 className="font-bold text-xl text-white">Dados do Operador</h2>
             </div>
             
-            <form onSubmit={handleSave} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nome Completo</label>
+            <form onSubmit={handleSave} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Nome Completo</label>
                   <input 
                     type="text" 
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-slate-900 dark:text-white"
+                    className="w-full px-4 py-3 bg-black border border-white/10 rounded-xl focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 text-white outline-none transition-all"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">E-mail</label>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">E-mail</label>
                   <input 
                     type="email" 
                     value={formData.email}
                     onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-slate-900 dark:text-white"
+                    className="w-full px-4 py-3 bg-black border border-white/10 rounded-xl focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 text-white outline-none transition-all"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Telefone / WhatsApp</label>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Contato</label>
                   <input 
                     type="text" 
                     placeholder="(00) 00000-0000"
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-slate-900 dark:text-white"
+                    className="w-full px-4 py-3 bg-black border border-white/10 rounded-xl focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 text-white outline-none transition-all"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Cargo</label>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Nível de Acesso</label>
                   <input 
                     type="text" 
                     value={user.role}
                     disabled
-                    className="w-full px-4 py-2 bg-slate-100 dark:bg-slate-600 border border-slate-200 dark:border-slate-500 text-slate-500 dark:text-slate-300 rounded-lg cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/5 text-slate-400 rounded-xl cursor-not-allowed uppercase font-mono tracking-wide"
                   />
                 </div>
               </div>
               
-              <div className="pt-4 flex items-center justify-between">
-                {successMsg && <span className="text-green-600 dark:text-green-400 text-sm font-medium animate-in fade-in">{successMsg}</span>}
+              <div className="pt-6 flex items-center justify-between">
+                {successMsg && (
+                  <div className="flex items-center gap-2 text-green-400 text-sm font-bold bg-green-400/10 px-3 py-1 rounded-full animate-in fade-in">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    {successMsg}
+                  </div>
+                )}
                 <div className="flex-1"></div>
-                <button type="submit" className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-medium shadow-md transition-all">
-                  <Save className="w-4 h-4" /> Salvar Alterações
+                <button type="submit" className="flex items-center gap-2 bg-white text-black hover:bg-slate-200 px-8 py-3 rounded-xl font-bold shadow-lg transition-all">
+                  <Save className="w-4 h-4" /> Salvar
                 </button>
               </div>
             </form>
           </div>
 
           {/* Company Info */}
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 transition-colors">
-            <div className="flex items-center gap-3 mb-6 border-b border-slate-100 dark:border-slate-700 pb-4">
-               <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg text-indigo-600 dark:text-indigo-400">
+          <div className="bg-zinc-900/50 backdrop-blur-md rounded-3xl border border-white/5 p-8 shadow-xl">
+            <div className="flex items-center gap-4 mb-8 pb-6 border-b border-white/5">
+               <div className="p-2 bg-violet-500/10 rounded-lg text-violet-400 border border-violet-500/20">
                  <Building2 className="w-5 h-5" />
                </div>
                <div>
-                 <h2 className="font-bold text-lg text-slate-800 dark:text-white">Dados da Empresa</h2>
-                 <p className="text-xs text-slate-500 dark:text-slate-400">Usado para emissão de pedidos e recibos.</p>
+                 <h2 className="font-bold text-xl text-white">Entidade Corporativa</h2>
                </div>
             </div>
             
-            <div className="space-y-4">
-               <div>
-                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Nome Fantasia</label>
+            <div className="space-y-6">
+               <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Razão Social</label>
                   <input 
                     type="text" 
                     value={formData.companyName}
                     onChange={(e) => setFormData({...formData, companyName: e.target.value})}
-                    className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-slate-900 dark:text-white"
+                    className="w-full px-4 py-3 bg-black border border-white/10 rounded-xl focus:ring-1 focus:ring-cyan-500 focus:border-cyan-500 text-white outline-none transition-all"
                   />
                </div>
-               <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700 flex items-start gap-3">
-                  <div className="p-1 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded">
-                    <Lock className="w-4 h-4" />
+               <div className="bg-black/30 p-6 rounded-2xl border border-dashed border-white/10 flex items-center gap-4 hover:border-cyan-500/30 transition-colors cursor-pointer group">
+                  <div className="p-3 bg-zinc-900 rounded-xl text-slate-400 group-hover:text-cyan-400 transition-colors">
+                    {isVip ? <Building2 className="w-6 h-6" /> : <Lock className="w-6 h-6" />}
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-slate-700 dark:text-slate-200">Logo Personalizada</h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                      {isVip ? 'Faça upload da sua marca para personalizar o sistema.' : 'Disponível apenas no plano VIP.'}
+                    <h4 className="font-bold text-white group-hover:text-cyan-400 transition-colors">Identidade Visual</h4>
+                    <p className="text-xs text-slate-500 mt-1">
+                      {isVip ? 'Upload de assets para branding do sistema.' : 'Recurso bloqueado para nível BASIC.'}
                     </p>
-                    {isVip ? (
-                      <button className="mt-2 text-xs text-indigo-600 dark:text-indigo-400 font-bold hover:underline">Fazer Upload</button>
-                    ) : (
-                      <button className="mt-2 text-xs text-slate-400 dark:text-slate-500 font-medium cursor-not-allowed flex items-center gap-1">
-                        <Lock className="w-3 h-3" /> Bloqueado
-                      </button>
-                    )}
                   </div>
                </div>
             </div>
@@ -190,47 +196,54 @@ const Settings: React.FC<SettingsProps> = ({ user, onUpdateUser }) => {
         </div>
 
         {/* Right Column - Plan & Security */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           <PlanCard />
 
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 transition-colors">
-            <div className="flex items-center gap-3 mb-4">
-              <Shield className="w-5 h-5 text-slate-400 dark:text-slate-500" />
-              <h3 className="font-bold text-slate-800 dark:text-white">Segurança</h3>
+          <div className="bg-zinc-900/50 backdrop-blur-md rounded-3xl border border-white/5 p-8 shadow-xl">
+            <div className="flex items-center gap-3 mb-6">
+              <Shield className="w-5 h-5 text-emerald-500" />
+              <h3 className="font-bold text-white">Segurança</h3>
             </div>
-            <div className="space-y-2">
-              <button className="w-full flex justify-between items-center p-3 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg group transition-colors text-left">
-                <span className="text-sm text-slate-600 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Alterar Senha</span>
-                <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-indigo-400" />
+            <div className="space-y-3">
+              <button className="w-full flex justify-between items-center p-4 bg-black/40 hover:bg-white/5 border border-white/5 hover:border-cyan-500/30 rounded-xl group transition-all text-left">
+                <span className="text-sm font-medium text-slate-300 group-hover:text-white">Redefinir Credenciais</span>
+                <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-cyan-400" />
               </button>
-              <button className="w-full flex justify-between items-center p-3 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg group transition-colors text-left">
+              <button className="w-full flex justify-between items-center p-4 bg-black/40 hover:bg-white/5 border border-white/5 hover:border-cyan-500/30 rounded-xl group transition-all text-left">
                  <div>
-                   <span className="block text-sm text-slate-600 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Autenticação de Dois Fatores</span>
-                   <span className="text-[10px] text-slate-400">Recomendado</span>
+                   <span className="block text-sm font-medium text-slate-300 group-hover:text-white">Autenticação Biométrica</span>
+                   <span className="text-[10px] text-cyan-500 uppercase font-bold tracking-wider">Recomendado</span>
                  </div>
-                 <div className="w-8 h-4 bg-slate-200 dark:bg-slate-600 rounded-full relative">
-                   <div className="w-4 h-4 bg-white rounded-full shadow-sm absolute left-0 top-0 border border-slate-300 dark:border-slate-500"></div>
+                 <div className="w-10 h-6 bg-zinc-800 rounded-full relative border border-white/10">
+                   <div className="w-4 h-4 bg-slate-500 rounded-full absolute left-1 top-1"></div>
                  </div>
               </button>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 transition-colors">
-            <div className="flex items-center gap-3 mb-4">
-              <CreditCard className="w-5 h-5 text-slate-400 dark:text-slate-500" />
-              <h3 className="font-bold text-slate-800 dark:text-white">Pagamento</h3>
+          <div className="bg-zinc-900/50 backdrop-blur-md rounded-3xl border border-white/5 p-8 shadow-xl">
+            <div className="flex items-center gap-3 mb-6">
+              <CreditCard className="w-5 h-5 text-slate-400" />
+              <h3 className="font-bold text-white">Faturamento</h3>
             </div>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">Próxima cobrança em 12 de Outubro.</p>
-            <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-700 rounded-lg border border-slate-100 dark:border-slate-600 mb-4">
-               <div className="w-8 h-5 bg-slate-800 dark:bg-slate-900 rounded flex items-center justify-center text-[8px] text-white font-mono">VISA</div>
-               <span className="text-sm font-mono text-slate-600 dark:text-slate-300">•••• 4242</span>
+            <div className="flex items-center gap-4 p-4 bg-black/40 rounded-xl border border-white/5 mb-4">
+               <div className="w-10 h-6 bg-white rounded flex items-center justify-center">
+                  <div className="w-3 h-3 bg-red-500 rounded-full opacity-80 -mr-1"></div>
+                  <div className="w-3 h-3 bg-orange-500 rounded-full opacity-80"></div>
+               </div>
+               <span className="font-mono text-slate-300">•••• 8821</span>
             </div>
-            <button className="text-sm text-indigo-600 dark:text-indigo-400 font-medium hover:underline">Gerenciar método de pagamento</button>
+            <button className="text-xs text-cyan-400 font-bold hover:text-cyan-300 uppercase tracking-wider">Atualizar Método</button>
           </div>
         </div>
       </div>
     </div>
   );
 };
+
+// Helper icon
+function SettingsIcon(props: any) {
+  return <Cpu {...props} />
+}
 
 export default Settings;

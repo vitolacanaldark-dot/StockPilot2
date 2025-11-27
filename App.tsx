@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
@@ -17,22 +16,19 @@ function App() {
   const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
   const [sales, setSales] = useState<Sale[]>(INITIAL_SALES);
   
-  // Theme State
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
-    }
-    return 'light';
-  });
+  // Theme State - Defaulting to dark for the new design
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
   useEffect(() => {
     const storedUser = localStorage.getItem('stockpilot_user');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
+    // Enforce dark mode on mount for this redesign
+    document.documentElement.classList.add('dark');
   }, []);
 
-  // Apply theme class to html element
+  // Sync theme changes (though UI is predominantly dark now)
   useEffect(() => {
     const root = window.document.documentElement;
     if (theme === 'dark') {

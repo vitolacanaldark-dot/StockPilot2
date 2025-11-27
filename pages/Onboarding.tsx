@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { IndustryTemplate } from '../types';
 import { INDUSTRY_TEMPLATES } from '../constants';
@@ -12,66 +11,73 @@ interface OnboardingProps {
 const Onboarding: React.FC<OnboardingProps> = ({ onSelect, onLogout }) => {
   const getIcon = (name: string) => {
     switch(name) {
-      case 'Shirt': return <ShoppingBag className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />;
-      case 'Coffee': return <Coffee className="w-8 h-8 text-amber-600 dark:text-amber-400" />;
-      case 'Scissors': return <Scissors className="w-8 h-8 text-pink-600 dark:text-pink-400" />;
-      case 'Wrench': return <Wrench className="w-8 h-8 text-slate-600 dark:text-slate-400" />;
-      default: return <ShoppingBag className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />;
+      case 'Shirt': return <ShoppingBag className="w-8 h-8 text-cyan-400" />;
+      case 'Coffee': return <Coffee className="w-8 h-8 text-amber-500" />;
+      case 'Scissors': return <Scissors className="w-8 h-8 text-pink-500" />;
+      case 'Wrench': return <Wrench className="w-8 h-8 text-slate-300" />;
+      default: return <ShoppingBag className="w-8 h-8 text-cyan-400" />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center justify-center p-6 relative transition-colors">
+    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 relative overflow-hidden">
+      
+      {/* Background FX */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-violet-600 via-cyan-500 to-violet-600"></div>
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px] opacity-20 pointer-events-none"></div>
+
       {/* Logout Escape Hatch */}
-      <div className="absolute top-6 right-6">
+      <div className="absolute top-8 right-8 z-50">
         <button 
           onClick={onLogout}
-          className="flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 px-4 py-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-red-200 dark:hover:border-red-900 transition-colors shadow-sm text-sm font-medium"
+          className="flex items-center gap-2 text-slate-500 hover:text-red-400 px-4 py-2 rounded-full bg-zinc-900 border border-white/10 hover:border-red-500/30 transition-colors text-sm font-medium backdrop-blur-md"
         >
           <LogOut className="w-4 h-4" />
-          Sair
+          Abortar Configuração
         </button>
       </div>
 
-      <div className="max-w-4xl w-full">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Vamos configurar seu espaço</h1>
-          <p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-            Selecione seu setor para configurar o StockPilot com as melhores categorias, configurações e produtos de exemplo para o seu negócio.
+      <div className="max-w-5xl w-full relative z-10">
+        <div className="text-center mb-16">
+          <h1 className="text-5xl font-black text-white mb-6 tracking-tight">Inicialização do Sistema</h1>
+          <p className="text-xl text-slate-400 max-w-2xl mx-auto font-light">
+            Selecione o módulo operacional que melhor se adapta à sua infraestrutura.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {INDUSTRY_TEMPLATES.map((template) => (
             <button
               key={template.id}
               type="button"
               onClick={() => onSelect(template)}
-              className="group relative flex items-start gap-6 p-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-indigo-300 dark:hover:border-indigo-700 hover:-translate-y-1 transition-all text-left cursor-pointer w-full"
+              className="group relative flex items-start gap-8 p-8 bg-zinc-900/40 backdrop-blur-md rounded-3xl border border-white/5 hover:border-cyan-500/50 hover:bg-zinc-900/80 transition-all text-left cursor-pointer w-full overflow-hidden"
             >
-              <div className="flex-shrink-0 w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-xl flex items-center justify-center group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/20 transition-colors">
+              {/* Glow effect on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
+              <div className="flex-shrink-0 w-20 h-20 bg-black rounded-2xl flex items-center justify-center border border-white/5 group-hover:border-cyan-500/30 shadow-lg relative z-10 transition-colors">
                 {getIcon(template.iconName)}
               </div>
-              <div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+              
+              <div className="relative z-10 flex-1">
+                <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-cyan-400 transition-colors">
                   {template.name}
                 </h3>
-                <p className="text-slate-500 dark:text-slate-400 text-sm mb-4 leading-relaxed">
+                <p className="text-slate-400 text-sm mb-6 leading-relaxed">
                   {template.description}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {template.categories.slice(0, 3).map((cat, i) => (
-                    <span key={i} className="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-medium rounded-md">
+                    <span key={i} className="px-3 py-1 bg-white/5 border border-white/5 text-slate-300 text-xs font-mono font-bold rounded-full group-hover:border-cyan-500/20 transition-colors">
                       {cat}
                     </span>
                   ))}
-                  <span className="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 text-xs font-medium rounded-md">
-                    + mais
-                  </span>
                 </div>
               </div>
-              <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                <CheckCircle2 className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+              
+              <div className="absolute top-8 right-8 opacity-0 group-hover:opacity-100 transition-all transform group-hover:scale-110">
+                <CheckCircle2 className="w-8 h-8 text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]" />
               </div>
             </button>
           ))}

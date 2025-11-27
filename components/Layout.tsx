@@ -1,7 +1,6 @@
-
 import React, { useState } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Package, ShoppingCart, LogOut, Search, Bell, Menu, Settings, Check, Info, AlertTriangle, Moon, Sun } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, LogOut, Search, Bell, Menu, Settings, Check, Info, AlertTriangle, Cpu } from 'lucide-react';
 import { User as UserType } from '../types';
 import { ROLE_PERMISSIONS, MOCK_NOTIFICATIONS } from '../constants';
 
@@ -12,7 +11,7 @@ interface LayoutProps {
   onToggleTheme: () => void;
 }
 
-const Layout: React.FC<LayoutProps> = ({ user, onLogout, isDark, onToggleTheme }) => {
+const Layout: React.FC<LayoutProps> = ({ user, onLogout }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
@@ -22,9 +21,9 @@ const Layout: React.FC<LayoutProps> = ({ user, onLogout, isDark, onToggleTheme }
   const permissions = ROLE_PERMISSIONS[user.role];
 
   const navItems = [
-    { name: 'Painel', path: '/', icon: LayoutDashboard, allowed: permissions.canViewFinancials || permissions.canManageInventory },
+    { name: 'Dashboard', path: '/', icon: LayoutDashboard, allowed: permissions.canViewFinancials || permissions.canManageInventory },
     { name: 'Estoque', path: '/inventory', icon: Package, allowed: true },
-    { name: 'PDV / Caixa', path: '/pos', icon: ShoppingCart, allowed: permissions.canSell },
+    { name: 'PDV', path: '/pos', icon: ShoppingCart, allowed: permissions.canSell },
     { name: 'Configurações', path: '/settings', icon: Settings, allowed: true },
   ];
 
@@ -40,141 +39,151 @@ const Layout: React.FC<LayoutProps> = ({ user, onLogout, isDark, onToggleTheme }
 
   const getNotificationIcon = (type: string) => {
     switch(type) {
-      case 'ALERT': return <AlertTriangle className="w-5 h-5 text-red-500" />;
-      case 'SUCCESS': return <Check className="w-5 h-5 text-green-500" />;
-      default: return <Info className="w-5 h-5 text-blue-500" />;
+      case 'ALERT': return <AlertTriangle className="w-4 h-4 text-red-500" />;
+      case 'SUCCESS': return <Check className="w-4 h-4 text-cyan-500" />;
+      default: return <Info className="w-4 h-4 text-violet-500" />;
     }
   };
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-950 overflow-hidden transition-colors duration-200">
+    <div className="flex h-screen bg-black text-slate-200 overflow-hidden font-sans selection:bg-cyan-500/30 selection:text-cyan-200">
+      
+      {/* Decorative Background Glows */}
+      <div className="fixed top-[-20%] left-[-10%] w-[500px] h-[500px] bg-violet-900/20 rounded-full blur-[120px] pointer-events-none z-0"></div>
+      <div className="fixed bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-cyan-900/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
+
       {/* Sidebar - Desktop */}
-      <aside className="hidden md:flex flex-col w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shadow-sm z-20 transition-colors">
-        <div className="p-6 flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
-          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-            <Package className="text-white w-5 h-5" />
+      <aside className="hidden md:flex flex-col w-64 bg-zinc-950/80 backdrop-blur-xl border-r border-white/5 z-20 relative">
+        <div className="p-6 flex items-center gap-3 cursor-pointer" onClick={() => navigate('/')}>
+          <div className="relative w-10 h-10 flex items-center justify-center">
+             <div className="absolute inset-0 bg-cyan-500 blur-lg opacity-40"></div>
+             <div className="relative w-10 h-10 bg-gradient-to-tr from-cyan-600 to-violet-600 rounded-xl flex items-center justify-center border border-white/10 shadow-lg">
+                <Cpu className="text-white w-6 h-6" />
+             </div>
           </div>
-          <span className="text-xl font-bold text-slate-800 dark:text-white tracking-tight">StockPilot</span>
+          <div>
+             <span className="text-xl font-bold text-white tracking-wide block leading-none">Stock<span className="text-cyan-400">Pilot</span></span>
+             <span className="text-[10px] text-slate-500 font-mono tracking-widest uppercase blur-[0.3px]">System v2.0</span>
+          </div>
         </div>
 
-        <nav className="flex-1 px-4 space-y-2 py-4">
+        <nav className="flex-1 px-4 space-y-2 py-6">
           {navItems.filter(i => i.allowed).map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <NavLink
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
+                className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 group relative overflow-hidden ${
                   isActive 
-                    ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-medium shadow-sm' 
-                    : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200'
+                    ? 'text-white' 
+                    : 'text-slate-500 hover:text-slate-200 hover:bg-white/5'
                 }`}
               >
-                <item.icon className={`w-5 h-5 ${isActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300'}`} />
-                {item.name}
+                {isActive && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-transparent border-l-2 border-cyan-400"></div>
+                )}
+                <item.icon className={`w-5 h-5 relative z-10 transition-colors ${isActive ? 'text-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.5)]' : 'group-hover:text-cyan-200'}`} />
+                <span className="relative z-10 font-medium">{item.name}</span>
               </NavLink>
             );
           })}
         </nav>
 
-        {/* Industry & Role Badge */}
-        <div className="p-4 mx-4 mb-4 bg-gradient-to-br from-indigo-900 to-slate-900 rounded-2xl text-white shadow-lg">
-          <div className="flex justify-between items-start mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-indigo-200">
+        {/* Role Badge */}
+        <div className="mx-4 mb-4 p-4 rounded-2xl bg-gradient-to-br from-zinc-900 to-black border border-white/5 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-16 h-16 bg-violet-500/10 rounded-full blur-xl -mr-6 -mt-6"></div>
+          <div className="flex justify-between items-start mb-2 relative z-10">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500 group-hover:text-cyan-400 transition-colors">
               {user.role === 'OWNER' ? 'Proprietário' : user.role === 'MANAGER' ? 'Gerente' : user.role === 'CASHIER' ? 'Caixa' : 'Visitante'}
             </span>
             {user.plan.includes('VIP') && (
-               <span className="bg-amber-400/20 text-amber-200 text-[10px] px-2 py-0.5 rounded-full backdrop-blur-sm border border-amber-400/30">VIP</span>
+               <span className="bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 text-[9px] px-2 py-0.5 rounded shadow-[0_0_10px_rgba(6,182,212,0.2)]">VIP</span>
             )}
           </div>
-          <p className="text-sm font-medium mb-3">Edição {user.industry || 'Geral'}</p>
-          <div className="w-full bg-white/20 h-1.5 rounded-full mb-2 overflow-hidden">
-            <div className="bg-indigo-400 h-full w-[75%]"></div>
+          <p className="text-sm font-medium text-slate-300 mb-3">{user.industry || 'Geral'}</p>
+          <div className="w-full bg-zinc-800 h-1 rounded-full overflow-hidden">
+            <div className="bg-gradient-to-r from-cyan-500 to-violet-500 h-full w-[75%] shadow-[0_0_10px_rgba(139,92,246,0.5)]"></div>
           </div>
-          <p className="text-xs text-indigo-200">75% da cota usada</p>
         </div>
 
-        <div className="p-4 border-t border-slate-100 dark:border-slate-800">
+        <div className="p-4 border-t border-white/5">
           <button 
             onClick={onLogout}
-            className="flex items-center gap-3 text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-500 w-full px-4 py-2 transition-colors"
+            className="flex items-center gap-3 text-slate-500 hover:text-red-400 w-full px-4 py-2 transition-colors group"
           >
-            <LogOut className="w-5 h-5" />
-            <span>Sair</span>
+            <LogOut className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+            <span className="text-sm font-medium">Encerrar Sessão</span>
           </button>
         </div>
       </aside>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative z-10">
+        
         {/* Header */}
-        <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10 px-6 py-4 flex items-center justify-between transition-colors">
+        <header className="h-20 px-6 flex items-center justify-between border-b border-white/5 bg-black/50 backdrop-blur-md sticky top-0 z-30">
           <div className="flex items-center gap-4 md:hidden">
-            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 -ml-2 text-slate-600 dark:text-slate-300">
+            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="p-2 -ml-2 text-slate-300">
               <Menu className="w-6 h-6" />
             </button>
-            <span className="font-bold text-lg text-slate-800 dark:text-white">StockPilot</span>
+            <div className="flex items-center gap-2">
+               <div className="w-8 h-8 bg-gradient-to-tr from-cyan-600 to-violet-600 rounded-lg flex items-center justify-center">
+                  <Cpu className="text-white w-4 h-4" />
+               </div>
+            </div>
           </div>
 
-          <div className="hidden md:flex flex-1 max-w-xl relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+          <div className="hidden md:flex flex-1 max-w-lg relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4 group-focus-within:text-cyan-400 transition-colors" />
             <input 
               type="text" 
-              placeholder="Buscar produtos, pedidos ou ajuda..." 
-              className="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-800 border-none rounded-full text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-800 text-slate-900 dark:text-slate-200 transition-all placeholder:text-slate-400"
+              placeholder="Buscar comando ou produto..." 
+              className="w-full pl-11 pr-4 py-2.5 bg-zinc-900/50 border border-white/5 rounded-full text-sm text-slate-200 focus:bg-zinc-900 focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition-all placeholder:text-slate-600"
             />
           </div>
 
-          <div className="flex items-center gap-4">
-             {/* Theme Toggle */}
-             <button
-               onClick={onToggleTheme}
-               className="p-2 text-slate-400 hover:text-indigo-600 dark:text-slate-400 dark:hover:text-indigo-400 transition-colors rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"
-               title={isDark ? "Mudar para modo claro" : "Mudar para modo escuro"}
-             >
-               {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-             </button>
-
+          <div className="flex items-center gap-6">
             {/* Notification Bell */}
             <div className="relative">
               <button 
                 onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-                className={`relative p-2 transition-colors rounded-full ${isNotificationsOpen ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' : 'text-slate-400 hover:text-slate-600 dark:text-slate-400 dark:hover:text-slate-200'}`}
+                className={`relative p-2 transition-all duration-300 rounded-full hover:bg-white/5 ${isNotificationsOpen ? 'text-cyan-400 bg-cyan-500/10' : 'text-slate-400 hover:text-cyan-300'}`}
               >
                 <Bell className="w-5 h-5" />
                 {unreadCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse"></span>
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-black shadow-[0_0_8px_rgba(239,68,68,0.6)] animate-pulse"></span>
                 )}
               </button>
 
               {/* Notification Dropdown */}
               {isNotificationsOpen && (
-                <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
-                   <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
-                     <h3 className="font-semibold text-slate-800 dark:text-white">Notificações</h3>
+                <div className="absolute right-0 top-full mt-4 w-80 bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-200">
+                   <div className="flex items-center justify-between p-4 border-b border-white/5 bg-white/5">
+                     <h3 className="font-semibold text-white text-sm">Notificações</h3>
                      {unreadCount > 0 && (
-                       <button onClick={markAllRead} className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 font-medium">
-                         Marcar todas como lidas
+                       <button onClick={markAllRead} className="text-xs text-cyan-400 hover:text-cyan-300 font-medium">
+                         Marcar lidas
                        </button>
                      )}
                    </div>
-                   <div className="max-h-96 overflow-y-auto">
+                   <div className="max-h-80 overflow-y-auto">
                      {notifications.length === 0 ? (
-                       <div className="p-8 text-center text-slate-400 text-sm">Nenhuma notificação recente.</div>
+                       <div className="p-8 text-center text-slate-500 text-sm">Sistema atualizado. Nenhuma notificação.</div>
                      ) : (
                        notifications.map(n => (
                          <div 
                            key={n.id} 
                            onClick={() => markAsRead(n.id)}
-                           className={`p-4 border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors flex gap-3 ${!n.read ? 'bg-indigo-50/30 dark:bg-indigo-900/10' : ''}`}
+                           className={`p-4 border-b border-white/5 hover:bg-white/5 cursor-pointer transition-colors flex gap-3 ${!n.read ? 'bg-cyan-500/5' : ''}`}
                          >
-                            <div className={`mt-1 flex-shrink-0 ${!n.read ? 'opacity-100' : 'opacity-50'}`}>
+                            <div className={`mt-0.5 flex-shrink-0 ${!n.read ? 'opacity-100' : 'opacity-40'}`}>
                               {getNotificationIcon(n.type)}
                             </div>
                             <div>
-                              <p className={`text-sm ${!n.read ? 'font-semibold text-slate-800 dark:text-slate-100' : 'text-slate-600 dark:text-slate-400'}`}>{n.title}</p>
-                              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{n.message}</p>
-                              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2">{new Date(n.date).toLocaleDateString()} às {new Date(n.date).getHours()}:{new Date(n.date).getMinutes()}</p>
+                              <p className={`text-sm ${!n.read ? 'font-medium text-slate-200' : 'text-slate-500'}`}>{n.title}</p>
+                              <p className="text-xs text-slate-500 mt-1 leading-relaxed">{n.message}</p>
+                              <p className="text-[10px] text-slate-600 mt-2 font-mono">{new Date(n.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</p>
                             </div>
                          </div>
                        ))
@@ -184,31 +193,37 @@ const Layout: React.FC<LayoutProps> = ({ user, onLogout, isDark, onToggleTheme }
               )}
             </div>
 
+            {/* Profile */}
             <div 
-              className="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-700 cursor-pointer hover:opacity-80 transition-opacity"
+              className="flex items-center gap-3 pl-6 border-l border-white/5 cursor-pointer group"
               onClick={() => navigate('/settings')}
             >
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium text-slate-800 dark:text-white">{user.name}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">
-                   {user.role === 'OWNER' ? 'Proprietário' : user.role === 'MANAGER' ? 'Gerente' : user.role === 'CASHIER' ? 'Caixa' : 'Visitante'}
+                <p className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">{user.name}</p>
+                <p className="text-[10px] text-slate-500 uppercase tracking-wide font-bold group-hover:text-cyan-500 transition-colors">
+                   {user.role}
                 </p>
               </div>
-              <img src={user.avatarUrl} alt="User" className="w-9 h-9 rounded-full border border-slate-200 dark:border-slate-700 object-cover" />
+              <div className="relative">
+                 <img src={user.avatarUrl} alt="User" className="w-9 h-9 rounded-lg border border-white/10 object-cover group-hover:border-cyan-500/50 transition-colors" />
+                 <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-black rounded-full flex items-center justify-center">
+                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full shadow-[0_0_5px_rgba(34,197,94,0.8)]"></div>
+                 </div>
+              </div>
             </div>
           </div>
         </header>
 
         {/* Mobile Navigation Menu */}
         {isMobileMenuOpen && (
-           <div className="absolute top-[60px] left-0 right-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-xl z-50 md:hidden p-4">
+           <div className="absolute top-[80px] left-0 right-0 bg-zinc-950/95 backdrop-blur-xl border-b border-white/10 shadow-2xl z-40 md:hidden p-4 animate-in slide-in-from-top-5">
               <nav className="flex flex-col space-y-2">
               {navItems.filter(i => i.allowed).map((item) => (
                 <NavLink
                   key={item.path}
                   to={item.path}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={({isActive}) => `flex items-center gap-3 px-4 py-3 rounded-lg ${isActive ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' : 'text-slate-600 dark:text-slate-300'}`}
+                  className={({isActive}) => `flex items-center gap-3 px-4 py-3 rounded-lg ${isActive ? 'bg-cyan-500/10 text-cyan-400' : 'text-slate-400'}`}
                 >
                   <item.icon className="w-5 h-5" />
                   {item.name}
@@ -216,7 +231,7 @@ const Layout: React.FC<LayoutProps> = ({ user, onLogout, isDark, onToggleTheme }
               ))}
               <button 
                 onClick={onLogout}
-                className="flex items-center gap-3 px-4 py-3 text-red-600 dark:text-red-400 rounded-lg mt-2 border-t border-slate-100 dark:border-slate-800"
+                className="flex items-center gap-3 px-4 py-3 text-red-400 rounded-lg mt-2 border-t border-white/10"
               >
                 <LogOut className="w-5 h-5" />
                 Sair
@@ -226,7 +241,7 @@ const Layout: React.FC<LayoutProps> = ({ user, onLogout, isDark, onToggleTheme }
         )}
 
         {/* Page Content */}
-        <main className="flex-1 overflow-auto p-4 md:p-8 relative" onClick={() => {
+        <main className="flex-1 overflow-auto p-4 md:p-8 relative scroll-smooth" onClick={() => {
             if (isNotificationsOpen) setIsNotificationsOpen(false);
         }}>
           <Outlet />
