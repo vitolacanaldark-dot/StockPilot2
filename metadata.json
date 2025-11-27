@@ -1,0 +1,7 @@
+{
+  "name": "Copy of StockPilot",
+  "description": "Uma plataforma inteligente de gestão de estoque para varejistas modernos. Com previsão inteligente, PDV integrado e análises VIP.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
